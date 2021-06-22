@@ -45,149 +45,26 @@
 </head>
 <body>
 	<div id="topcontainer">
-		<div id="betterplace"></div>
 		<div id="update"></div>
 	</div>
-	<span id="menu">&#9776;</span>
-<!--	<div id="loading_layer"><div id="loading">Loading data...</div></div>-->
-    <div id="sidebar" style="display: none;">
-		<div id="explanation"></div>
-		<div id="map-info" style="display: none;"></div>
-	</div>
-    
-    
-    
-    <div id="source_container">
-           
-           <table id="sources">
-        <tbody>
-          <tr>
-            <td>
-            <input type="checkbox" id="sc" name="sc">
-            <label for="sc">Sensor.Community</label>
-            </td>
-            <td>
-            <input type="checkbox" id="eea" name="eea">
-            <label for="eea">EEA</label>
-            </td>
-            <td>
-            <input type="checkbox" id="uba" name="uba">
-            <label for="uba">Umwelt Bundesamt</label>
-            </td>
-            <td>
-            <input type="checkbox" id="aura" name="aura">
-            <label for="aura">Atmo AURA</label>
-            </td>
-            <td>
-            <input type="checkbox" id="paca" name="paca">
-            <label for="paca">Atmo PACA</label>
-            </td>
-            <td>
-            <input type="checkbox" id="occi" name="occi">
-            <label for="occi">Atmo Occitanie</label>
-            </td>
-            <td>
-            <input type="checkbox" id="lucht" name="lucht">
-            <label for="lucht">Luchtmeetnet</label>
-            </td>
-          </tr>
-          <tr>
-            <td>
-              <input type="radio" id="current" name="sc" value="current">
-              <label for="current">Current</label>
-            </td>
-            <td>
-<!--
-              <input type="radio" id="current" name="eea" value="current" checked>
-              <label for="current">Current</label>
--->
-            </td>
-            <td>
-<!--
-              <input type="radio" id="current" name="uba" value="current">
-              <label for="current">Current</label>
--->
-            </td>
-            <td>
-              <input type="radio" id="current" name="aura" value="current">
-              <label for="current">Current</label>
-            </td>
-            <td>
-              <input type="radio" id="current" name="paca" value="current">
-              <label for="current">Current</label>
-            </td>
-            <td>
-              <input type="radio" id="current" name="occi" value="current">
-              <label for="current">Current</label>
-            </td>
-            <td>
-              <input type="radio" id="current" name="lucht" value="current">
-              <label for="current">Current</label>
-            </td>
-            <tr>
-            <td>
-              <input type="radio" id="hourly" name="sc" value="hourly">
-              <label for="hourly">Hourly</label>
-            </td>
-            <td>
-              <input type="radio" id="hourly" name="eea" value="hourly">
-              <label for="hourly">Hourly</label>
-            </td>
-            <td>
-              <input type="radio" id="hourly" name="uba" value="hourly">
-              <label for="hourly">Hourly</label>
-            </td>
-            <td>
-              <input type="radio" id="hourly" name="aura" value="hourly">
-              <label for="hourly">Hourly</label>
-            </td>
-            <td>
-              <input type="radio" id="hourly" name="paca" value="hourly">
-              <label for="hourly">Hourly</label>
-            </td>
-            <td>
-              <input type="radio" id="hourly" name="occi" value="hourly">
-              <label for="hourly">Hourly</label>
-            </td>
-            <td>
-              <input type="radio" id="hourly" name="lucht" value="hourly">
-              <label for="hourly">Hourly</label>
-            </td>
-            <tr>
-            <td>
-              <input type="radio" id="daily" name="sc" value="daily">
-              <label for="daily">Daily</label>
-            </td>
-            <td>
-              <input type="radio" id="daily" name="eea" value="daily">
-              <label for="daily">Daily</label>
-            </td>
-            <td>
-              <input type="radio" id="daily" name="uba" value="daily">
-              <label for="daily">Daily</label>
-            </td>
-            <td>
-              <input type="radio" id="daily" name="aura" value="daily">
-              <label for="daily">Daily</label>
-            </td>
-            <td>
-              <input type="radio" id="daily" name="paca" value="daily">
-              <label for="daily">Daily</label>
-            </td>
-            <td>
-              <input type="radio" id="daily" name="occi" value="daily">
-              <label for="daily">Daily</label>
-            </td>
-            <td>
-              <input type="radio" id="daily" name="lucht" value="daily">
-              <label for="daily">Daily</label>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-        
-    </div>
+	<div id="loading_layer"><div id="loading">Loading data...</div></div>
 
+		<span id="menu">&#9776;</span>
+		<div id="sidebar" style="display: none;">
+			<div id="explanation">
+				<p>With this map, you can supervize a network with a large amount of sensors. For example, the sensors which where installed by a local community and given to end users.</p>
+				<p>You can load the sensors with a ; separated csv file with at least these keys:</p>
+			    <pre>email;idesp;lastname;firstname;address;</pre>
+				<pre>location;lat;lon;idapi</pre>
+				<p>idesp is the board ID which is shown will flashing the firmware or at the top of the configuration page.</p>
+				<p>location is "indoor" or "outdoor".</p>
+				<p>lat and lon have to be set up manually, for example with a famous geolocation API beginning with a G ...</p>
+				<p>idapi is the ID on the <a target='_blank' rel='noopener noreferrer' href="https://maps.sensor.community/">main map of Sensor.Community</a>. Zoom in to the location you want and click on the hexagon to get the number.</p>
+				<p>The fields have to be filled consistently according to the specifications of a csv file. All the geographical coordinates must be set up.</p>
+				<p>When the csv is loaded, the dataset is compared with the current json called at the Sensor.Community API. If the idapi is in both the data, the colour of the circle indicates the value according to the legend, otherwise the colour is grey. If there is no idapi in the dataset, a grey circle with a red border indicated the location. That means that the sensor has never been registered on <a target='_blank' rel='noopener noreferrer' href="https://devices.sensor.community/">devices.senor.community</a>.</p>
+				<p>No personal data is transfered to a remote server in anyway. The map works client side only.</p>
+			</div>
+		</div>
     
 	<div id="UI_container">
 		<div id ='legendcontainer'>
@@ -220,19 +97,89 @@
 					</div>
 				</div>
 			</div> 
+      <div class="legend" id="legend_PM1" style="display: none;">
+        <div class="legend-inner">
+          <div class="gradient">
+          </div>
+          <div class="labels">
+            <div class="label" style="bottom: 100%;"><b>500</b></div>
+            <div class="label" style="bottom: 80%;"><b>100</b></div>
+            <div class="label" style="bottom: 60%;"><b>75</b></div>
+            <div class="label" style="bottom: 41%;"><b>50</b></div>
+            <div class="label limit" style="bottom: 20%;"><b>25</b></div>
+            <div class="label" style="bottom: 1%;"><b>0 &micro;g/m&sup3;</b></div>
+          </div>
+        </div>
+      </div>
+<div class="legend" id="legend_Temperature" style="display: none;">
+  <div class="legend-inner">
+    <div class="gradient">
+      <div class="limit">
+      </div>
+    </div>
+    <div class="labels">
+      <div class="label" style="bottom: 100%;"><b>40</b></div>
+      <div class="label" style="bottom: 66%;"><b>20</b></div>
+      <div class="label" style="bottom: 33%;"><b>0</b></div>
+      <div class="label" style="bottom: 1%;"><b>-20 &deg;</b></div>
+    </div>
+  </div>
+</div>
+
+<div class="legend" id="legend_Humidity" style="display: none;">
+  <div class="legend-inner">
+    <div class="gradient">
+      <div class="limit">
+      </div>
+    </div>
+    <div class="labels">
+      <div class="label" style="bottom: 100%;"><b>100</b></div>
+      <div class="label" style="bottom: 80%;"><b>80</b></div>
+      <div class="label" style="bottom: 60%;"><b>60</b></div>
+      <div class="label" style="bottom: 40%;"><b>40</b></div>
+      <div class="label" style="bottom: 20%;"><b>20</b></div>
+      <div class="label" style="bottom: 1%;"><b>0 &#37;</b></div>
+    </div>
+  </div>
+</div>
+
+<div class="legend" id="legend_Pressure" style="display: none;">
+  <div class="legend-inner">
+    <div class="gradient">
+      <div class="limit">
+      </div>
+    </div>
+    <div class="labels">
+      <div class="label" style="bottom: 100%;"><b>1100</b></div>
+      <div class="label" style="bottom: 75%;"><b>1057</b></div>
+      <div class="label" style="bottom: 50%;"><b>1013</b></div>
+      <div class="label" style="bottom: 25%;"><b>970</b></div>
+      <div class="label" style="bottom: 1%;"><b>926 hPa</b></div>
+    </div>
+  </div>
+</div>
 		</div>
 		<div id="custom-select" class="custom-select" style="display: none;">
 			<select>
 				<option value="PM10"> PM10</option>
 				<option value="PM25"> PM2.5</option>
+        <option value="PM1"> PM1</option>
+        <option value="Temperature"> Temperature</option>
+        <option value="Humidity"> rel. Humidity</option>
+        <option value="Pressure"> Pressure</option>
 			</select>
 		</div>
 		<div id="layer-select" class="layer-select">
-<!--			<input type="checkbox" id="cb_labs" name="labs" checked="checked" /><label for="cb_labs" id="label_local_labs">Local labs</label><br/>-->
+			<input type="checkbox" id="cb_labs" name="labs" checked="checked" /><label for="cb_labs" id="label_local_labs">Local labs</label><br/>
 			<input type="checkbox" id="cb_wind" name="wind" checked="checked" /><label for="cb_wind" id="label_wind_layer">Wind layer</label><br/>
-			<!-- <input type="checkbox" id="cb_eustations" name="eustations" checked="" /><label for="cb_eustations" id="label_eustations">EU stations</label><br/> -->
 		</div>
-        
+		<input type="file" id="input">
+		<div id="explain">
+			<ul style="list-style-type:none; padding:5px; margin:0px;">
+				<li><span id="dot1"></span>  Not connected</li>
+				<li><span id="dot2"></span>  Not registered</li>
+			</ul>
+		</div>
 	</div>
 <div id='map'></div>
     

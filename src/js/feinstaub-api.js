@@ -13,7 +13,6 @@ let api = {
 		"HPM": true,
 		"SPS30": true,
 	},
-
 	thp_sensors: {
 		"DHT11": true,
 		"DHT22": true,
@@ -30,7 +29,6 @@ let api = {
 		"SHT35": true,
 		"SHT85": true,
 	},
-	
 	noise_sensors: {
 		"Laerm": true,
 	},
@@ -47,6 +45,8 @@ let api = {
 			} else if ((sel === "PM10") && (obj < 1900)) {
 				result = true;
 			} else if ((sel === "PM25") && (obj < 900)) {
+				result = true;
+			}else if ((sel === "PM1") && (obj < 900)) {
 				result = true;
 			} else if (sel === "Official_AQI_US") {
 				result = true;
@@ -114,13 +114,7 @@ let api = {
 		return (P1 >= P2) ? {"AQI": P1, "origin": "PM10"} : {"AQI": P2, "origin": "PM2.5"};
 	},
 
-	/* fetches from /now, ignores non-finedust sensors
-	now returns data from last 5 minutes, so we group all data by sensorId
-	 and compute a mean to get distinct values per sensor */
-	getData: async function (URL, num) {
-        
-        console.log(URL);
-
+	getData: async function (URL) {
 		function getRightValue(array, type) {
 			let value;
 			array.forEach(function (item) {
@@ -130,124 +124,65 @@ let api = {
 			});
 			return value;
 		}
-
 		return fetch(URL)
 			.then((resp) => resp.json())
 			.then((json) => {
 				console.log('successful retrieved data');
 				let timestamp_data = '';
 				let timestamp_from = '';
-				if (num === 1) {
-					let cells = _.chain(json)
-						.filter((sensor) =>
-							typeof api.pm_sensors[sensor.sensor.sensor_type.name] != "undefined"
-							&& api.pm_sensors[sensor.sensor.sensor_type.name]
+				let cells = _.chain(json)					
+					.filter((sensor) => {
+						if (typeof api.pm_sensors[sensor.sensor.sensor_type.name] != "undefined"
+							&& sensor.sensor.sensor_type.name == "PMS7003"
+							&& api.checkValues(parseInt(getRightValue(sensor.sensordatavalues, "P0")), "PM1")
 							&& api.checkValues(parseInt(getRightValue(sensor.sensordatavalues, "P1")), "PM10")
-							&& api.checkValues(parseInt(getRightValue(sensor.sensordatavalues, "P2")), "PM25")
-						)
+							&& api.checkValues(parseInt(getRightValue(sensor.sensordatavalues, "P2")), "PM25")) {
+							return sensor
+						}else if (typeof api.thp_sensors[sensor.sensor.sensor_type.name] != "undefined"
+							&& sensor.sensor.sensor_type.name == "BME280"
+							&& api.checkValues(parseInt(getRightValue(sensor.sensordatavalues, "humidity")), "Humidity")
+							&& api.checkValues(parseInt(getRightValue(sensor.sensordatavalues, "temperature")), "Temperature")
+							&& api.checkValues(parseInt(getRightValue(sensor.sensordatavalues, "pressure"))/100, "Pressure")
+						) {
+							return sensor
+						};	
+					})
 						.map((values) => {
 							if (values.timestamp > timestamp_data) {
 								timestamp_data = values.timestamp;
-								timestamp_from = "data.dust.min";
-							}
-							return {
+								timestamp_from = "data";
+							};
+							if (values.sensordatavalues.some(obj => obj.value_type == "P0") && values.sensordatavalues.some(obj => obj.value_type == "P1") && values.sensordatavalues.some(obj => obj.value_type == "P2")) {
+								return {
+									data: {
+										PM1: parseInt(getRightValue(values.sensordatavalues, "P0")),
+										PM10: parseInt(getRightValue(values.sensordatavalues, "P1")),
+										PM25: parseInt(getRightValue(values.sensordatavalues, "P2"))
+									},
+									id: values.sensor.id,
+									sensor:values.sensor.sensor_type.name,
+									latitude: Number(values.location.latitude),
+									longitude: Number(values.location.longitude),
+									"indoor": values.location.indoor,
+								}
+							}else if (values.sensordatavalues.some(obj => obj.value_type == "humidity") && values.sensordatavalues.some(obj => obj.value_type == "temperature") && values.sensordatavalues.some(obj => obj.value_type == "pressure")) {
+								return {
 								data: {
-									PM10: parseInt(getRightValue(values.sensordatavalues, "P1")),
-									PM25: parseInt(getRightValue(values.sensordatavalues, "P2"))
+									Humidity: parseInt(getRightValue(values.sensordatavalues, "humidity")),
+									Temperature: parseInt(getRightValue(values.sensordatavalues, "temperature")),
+									Pressure: parseInt(getRightValue(values.sensordatavalues, "pressure")/100)
 								},
 								id: values.sensor.id,
+								sensor:values.sensor.sensor_type.name,
 								latitude: Number(values.location.latitude),
 								longitude: Number(values.location.longitude),
-								"indoor": values.location.indoor,
-							}
-						})
-						.value();
-					return Promise.resolve({cells: cells, timestamp: timestamp_data, timestamp_from: timestamp_from});
-				} else if (num === 2) {
-					let cells = _.chain(json)
-						.filter((sensor) =>
-							typeof api.pm_sensors[sensor.sensor.sensor_type.name] != "undefined"
-							&& api.pm_sensors[sensor.sensor.sensor_type.name]
-						)
-						.map((values) => {
-							if (values.timestamp > timestamp_data) {
-								timestamp_data = values.timestamp;
-								timestamp_from = "data.24h"
-							}
-							const data_in = {
-								"PM10": parseInt(getRightValue(values.sensordatavalues, "P1")),
-								"PM25": parseInt(getRightValue(values.sensordatavalues, "P2"))
+								indoor: values.location.indoor,
+								}
 							};
-							const data_out = api.officialAQIus(data_in);
-							return {
-								"data": {
-									"Official_AQI_US": data_out.AQI,
-									"origin": data_out.origin,
-									"PM10_24h": data_in.PM10,
-									"PM25_24h": data_in.PM25
-								},
-								"id": values.sensor.id,
-								"latitude": values.location.latitude,
-								"longitude": values.location.longitude,
-								"indoor": values.location.indoor,
-							}
 						})
-						.filter(function (values) {
-							return (api.checkValues(values.data.Official_AQI_US, "Official_AQI_US"));
-						})
-						.value();
-					return Promise.resolve({cells: cells, timestamp: timestamp_data, timestamp_from: timestamp_from});
-				} else if (num === 3) {
-					let cells = _.chain(json)
-						.filter((sensor) =>
-							typeof api.thp_sensors[sensor.sensor.sensor_type.name] != "undefined"
-							&& api.thp_sensors[sensor.sensor.sensor_type.name]
-						)
-						.map((values) => {
-							if (values.timestamp > timestamp_data) {
-								timestamp_data = values.timestamp;
-								timestamp_from = "data.temp.min";
-							}
-							return {
-								"data": {
-									"Pressure": parseInt(getRightValue(values.sensordatavalues, "pressure_at_sealevel")) / 100,
-									"Humidity": parseInt(getRightValue(values.sensordatavalues, "humidity")),
-									"Temperature": parseInt(getRightValue(values.sensordatavalues, "temperature"))
-								},
-								"id": values.sensor.id,
-								"latitude": values.location.latitude,
-								"longitude": values.location.longitude,
-								"indoor": values.location.indoor,
-							}
-						})
-						.value();
-					return Promise.resolve({cells: cells, timestamp: timestamp_data, timestamp_from: timestamp_from});
-				} else if (num === 4) {
-					let cells = _.chain(json)
-						.filter((sensor) =>
-							typeof api.noise_sensors[sensor.sensor.sensor_type.name] != "undefined"
-							&& api.noise_sensors[sensor.sensor.sensor_type.name]
-						)
-						.map((values) => {
-							if (values.timestamp > timestamp_data) {
-								timestamp_data = values.timestamp;
-								timestamp_from = "data.noise";
-							}
-							return {
-								"data": {
-									"Noise": parseInt(getRightValue(values.sensordatavalues, "noise_LAeq")),
-								},
-								"id": values.sensor.id,
-								"latitude": values.location.latitude,
-								"longitude": values.location.longitude,
-								"indoor": values.location.indoor,
-							}
-						})
-						.value();
-					return Promise.resolve({cells: cells, timestamp: timestamp_data, timestamp_from: timestamp_from});
-				}
+					.value();
+				return Promise.resolve({ cells: cells, timestamp: timestamp_data, timestamp_from: timestamp_from });
 			}).catch(function (error) {
-				// If there is any error you will catch them here
 				throw new Error(`Problems fetching data ${error}`)
 			});
 	}
