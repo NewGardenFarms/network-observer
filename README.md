@@ -1,11 +1,19 @@
-# Sensor.Community public data aggregator
-Visualize recent sensor data on a world map for [Sensor.Community](https://sensor.community) and for differents official measurements:
-* EEA
-* Luchtmeetnet
-* Atmo AURA
-* Atmo Sud
-* Atmo Occitanie
-* UmweltBundesamt
+# Network Observer
+An app which you can supervise your local network with.
+Fill a ; separated csv with the data you have set up yourself or collected among the end users of the sensors:
+* board ID
+* last name
+* first name
+* email
+* address
+* latitude
+* longitude
+* location indoor or outdoor
+* ID on the Sensor.Community map
+
+You can check the example file in the repository.
+
+Further instructions appear in the hamburger menu on the map.
  
 # Map application
 The implementation makes use of various frameworks and is on [ECMA 6](https://developer.mozilla.org/de/docs/Web/JavaScript) language level. 
