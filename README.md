@@ -11,6 +11,8 @@ Fill a ; separated csv with the data you have set up yourself or collected among
 * location indoor or outdoor
 * ID on the Sensor.Community map
 
+Everything happens client side and no data is transfered to any remote server.
+
 You can check the example file in the repository.
 
 Further instructions appear in the hamburger menu on the map.
